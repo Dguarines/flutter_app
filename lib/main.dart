@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import './ui/welcome_home.dart';
+import './ui/Login.dart';
 
 void main() {
   runApp(
     new MaterialApp(
-      title: "Make it Rain!",
-      home: new MakeItRain(),
+      title: "Login",
+      home: Login(),
   ));
 }
