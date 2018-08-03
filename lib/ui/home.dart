@@ -58,9 +58,22 @@ class BmiState extends State<Bmi>{
                         decoration: new InputDecoration(
                             labelText: 'Weight in lbs',
                             hintText: 'e.g: 180',
-                            icon: new Icon(Icons.person)
+                            icon: new Icon(Icons.line_weight)
                         )
+                    ),
+
+                    new Padding(padding: new EdgeInsets.all(10.6)),
+                    new Container(
+                      alignment: Alignment.center,
+                      child: new RaisedButton(
+                          onPressed: ()=> debugPrint('hello'),
+                          color: Colors.pinkAccent,
+                          child: new Text('Calculate'),
+                          textColor: Colors.white
+                      ),
+
                     )
+
                   ],
                 ),
               ),
