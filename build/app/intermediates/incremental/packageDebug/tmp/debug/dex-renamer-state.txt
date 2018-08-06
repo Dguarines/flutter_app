@@ -1,4 +1,4 @@
-#Sun Aug 05 20:48:02 GMT-03:00 2018
-base.0=C\:\\DESENVOLVIMENTO\\flutter_app\\build\\app\\intermediates\\transforms\\dexMerger\\debug\\0
+#Mon Aug 06 12:50:21 BRT 2018
+base.0=C\:\\Users\\ESIG\\Desktop\\Deivison\\workspace_app_deivison\\flutter_app\\build\\app\\intermediates\\transforms\\dexMerger\\debug\\0
 path.0=classes.dex
 renamed.0=classes.dex

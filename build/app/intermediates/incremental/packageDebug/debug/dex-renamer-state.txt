@@ -1,0 +1,4 @@
+#Thu Aug 02 12:51:03 BRT 2018
+base.0=C\:\\Users\\ESIG\\Desktop\\Deivison\\workspace_app_deivison\\flutter_app\\build\\app\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex

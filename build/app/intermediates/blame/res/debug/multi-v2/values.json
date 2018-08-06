@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\DESENVOLVIMENTO\\flutter_app\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\Users\\ESIG\\Desktop\\Deivison\\workspace_app_deivison\\flutter_app\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
-                    "source": "C:\\DESENVOLVIMENTO\\flutter_app\\android\\app\\src\\main\\res\\values\\styles.xml",
+                    "source": "C:\\Users\\ESIG\\Desktop\\Deivison\\workspace_app_deivison\\flutter_app\\android\\app\\src\\main\\res\\values\\styles.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
