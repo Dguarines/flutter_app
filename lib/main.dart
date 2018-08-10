@@ -5,21 +5,47 @@ import 'package:http/http.dart' as http;
 //import './ui/welcome_home.dart';
 
 
-Map _data;
+List _data;
+//List _features;
 
 void main() async  {
 
-  _data = await getQuakes();
-  print(_data['features'][0]['properties']);
+  _data = await getJson();
 
-  runApp(
-    new MaterialApp(
-      title: "Quakes",
-      home: new Quakes(),
+  String _body = "";
+
+  //print(_data); //just a string
+
+  for(int i = 0; i < _data.length; i++){
+    print(_data[i]['title'] + " body: " + _data[i]['body']);
+  }
+
+  _body = _data[0]['body'];
+
+  runApp(new MaterialApp(
+      title: "JSON PARSE",
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('JSON Parse'),
+          centerTitle: true,
+          backgroundColor: Colors.orangeAccent,
+        ),
+        body: new Center(
+          child: new Text(_body),
+        ),
+      ),
   ));
 }
 
-class Quakes extends StatelessWidget {
+Future<List> getJson() async {
+  String apiUrl = 'https://jsonplaceholder.typicode.com/posts';
+
+  http.Response response = await http.get(apiUrl);
+
+  return json.decode(response.body); // returns a List type
+}
+
+/*class Quakes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -31,23 +57,15 @@ class Quakes extends StatelessWidget {
 
       body: new Center(
         child: new ListView.builder(
-          itemCount: _data.length,
+          itemCount: 1,
           padding: const EdgeInsets.all(15.0),
           itemBuilder: (BuildContext context, int position) {
             return new ListTile(
-              title: new Text("${_data['features'][position]['properties']['place']}"),
+              title: new Text("${_data[position]}"),
             );
           }
         )
       ),
     );
   }
-}
-
-Future<Map> getQuakes() async {
-  String apiUrl = 'https://earthquakes.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
-
-  http.Response response = await http.get(apiUrl);
-
-  return JSON.decode(response.body);
-}
+}*/
