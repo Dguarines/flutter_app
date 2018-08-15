@@ -49,7 +49,7 @@ class _KlimaticState extends State<Klimatic> {
 
           new Container(
             margin: const EdgeInsets.fromLTRB(30.0, 290.0, 0.0, 0.0),
-            child: updateTempWidget("Beira"),
+            child: updateTempWidget("natal"),
           ),
         ],
       ),
@@ -71,7 +71,28 @@ class _KlimaticState extends State<Klimatic> {
         future: getWeather(util.apiId, city) ,
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           //Where we get all of the json data, we setup widgets
-        if()
+        if(snapshot.hasData){
+          Map content = snapshot.data;
+          return new Container(
+            child: new Column(
+              children: <Widget>[
+                new ListTile(
+                  title: new Text(content['main']['temp'].toString(),
+                  style: new TextStyle(
+                    fontStyle: FontStyle.normal,
+                    fontSize: 49.9,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500
+                  ),),
+                )
+              ],
+            )
+          );
+        }else {
+          return new Container(
+
+          );
+        }
      });
   }
 }
