@@ -1,106 +1,164 @@
-import 'dart:async';
-import 'dart:io';
-
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+import './model/board.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart'; //https://pub.dartlang.org/packages/path_provider#-installing-tab-
 
-void main() async {
-  var data = await readData();
+void main() => runApp(new MyApp());
 
-  if (data != null) {
-    String message = await readData();
-    print(message);
-  }
-
-  runApp(new MaterialApp(
-    title: 'IO',
-    home: new Home(),
-  ));
-}
-
-class Home extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
-  _HomeState createState() => new _HomeState();
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Community Board',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: new MyHomePage(),
+    );
+  }
 }
 
-class _HomeState extends State<Home> {
-  var _enterDataField = new TextEditingController();
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => new _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  List<Board> boardMessages = List();
+  Board board;
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  DatabaseReference databaseReference;
+
+  @override
+  void initState() {
+    super.initState();
+
+    board = Board("", "");
+    databaseReference = database.reference().child("community_board");
+    databaseReference.onChildAdded.listen(_onEntryAdded);
+    databaseReference.onChildChanged.listen(_onEntryChanged);
+  } //  void _incrementCounter() {
+////    database.reference().child("messge").push().set({
+////       "firstname" : "iOS",
+////      "lastname" : "X",
+////      "age" : 1
+////    });
+//
+//    database
+//        .reference()
+//        .child("message")
+//        .set({"firstname": "iOS", "Lastname": "X", "Age": 1});
+//
+//    setState(() {
+//      database
+//          .reference()
+//          .child("message")
+//          .once()
+//          .then((DataSnapshot snapshot) {
+//        Map<dynamic, dynamic> data = snapshot.value;
+//
+//        print("Values from db: ${snapshot.value}");
+//      });
+//
+//      _counter++;
+//    });
+//  }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Read/Write'),
-        centerTitle: true,
-        backgroundColor: Colors.greenAccent,
+        title: new Text("Board"),
       ),
-      body: new Container(
-        padding: const EdgeInsets.all(13.4),
-        alignment: Alignment.topCenter,
-        child: new ListTile(
-          title: new TextField(
-            controller: _enterDataField,
-            decoration: new InputDecoration(labelText: 'Write Something'),
+      body: Column(
+        children: <Widget>[
+          Flexible(
+            flex: 0,
+            child: Center(
+              child: Form(
+                key: formKey,
+                child: Flex(
+                  direction: Axis.vertical,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.subject),
+                      title: TextFormField(
+                        initialValue: "",
+                        onSaved: (val) => board.subject = val,
+                        validator: (val) => val == "" ? val : null,
+                      ),
+                    ),
+
+                    ListTile(
+                      leading: Icon(Icons.message),
+                      title: TextFormField(
+                        initialValue: "",
+                        onSaved: (val) => board.body = val,
+                        validator: (val) => val == "" ? val : null,
+                      ),
+                    ),
+
+                    //Send or Post button
+                    FlatButton(
+                      child: Text("Post"),
+                      color: Colors.redAccent,
+                      onPressed: () {
+                        handleSubmit();
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
-          subtitle: new FlatButton(
-              color: Colors.redAccent,
-              onPressed: () {
-                //save to file
-                writeData(_enterDataField.text);
+          Flexible(
+            child: FirebaseAnimatedList(
+              query: databaseReference,
+              itemBuilder: (_, DataSnapshot snapshot,
+                  Animation<double> animation, int index) {
+                return new Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.red,
+                    ),
+                    title: Text(boardMessages[index].subject),
+                    subtitle: Text(boardMessages[index].body),
+                  ),
+                );
               },
-              child: new Column(
-                children: <Widget>[
-                  new Text('Save Data'),
-                  new Padding(padding: new EdgeInsets.all(14.5)),
-                  new FutureBuilder(
-                      future: readData(),
-                      builder:
-                          (BuildContext context, AsyncSnapshot<String> data) {
-                        if (data.hasData != null) {
-                          return new Text(
-                            data.data.toString(),
-                            style: new TextStyle(color: Colors.white70),
-                          );
-                        } else {
-                          return new Text("No data saved");
-                        }
-                      })
-                ],
-              )),
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
-}
 
-Future<String> get _localPath async {
-  final directory = await getApplicationDocumentsDirectory();
-  return directory.path; //home/directory/
-}
+  void _onEntryAdded(Event event) {
+    setState(() {
+      boardMessages.add(Board.fromSnapshot(event.snapshot));
+    });
+  }
 
-Future<File> get _localFile async {
-  final path = await _localPath;
+  void handleSubmit() {
+    final FormState form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      form.reset();
+      //save form data to the database
+      databaseReference.push().set(board.toJson());
+    }
+  }
 
-  return new File('$path/data.txt'); //home/directory/data.txt
-}
+  void _onEntryChanged(Event event) {
+    var oldEntry = boardMessages.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
 
-//Write and Read from our file
-Future<File> writeData(String message) async {
-  final file = await _localFile;
-
-  //write to file
-  return file.writeAsString('$message');
-}
-
-Future<String> readData() async {
-  try {
-    final file = await _localFile;
-
-    //Read
-    String data = await file.readAsString();
-
-    return data;
-  } catch (e) {
-    return "Nothing saved yet!";
+    setState(() {
+      boardMessages[boardMessages.indexOf(oldEntry)] =
+          Board.fromSnapshot(event.snapshot);
+    });
   }
 }
